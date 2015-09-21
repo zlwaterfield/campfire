@@ -1,0 +1,39 @@
+[
+    {
+        "id":1,
+        "name": "type",
+        "list": [
+            "conferences",
+            "festivals",
+            "meetups",
+            "resorts"
+        ]
+    },
+    {
+        "id":2,
+        "name": "location",
+        "list": [
+            "toronto",
+            "california",
+            "vancouver",
+            "florida"
+        ]
+    },
+    {
+        "id":3,
+        "name": "price",
+        "list": [
+            "34",
+            "65",
+            "43",
+            "5"
+        ]
+    },
+    {
+        "id":4,
+        "name": "date",
+        "list":[
+
+        ]
+    }
+]
