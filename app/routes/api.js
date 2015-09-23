@@ -39,11 +39,6 @@ exports.getByTag = function(req, res) {
 
     var outputs = {};
     var jsonCount = 0;
-    var p2Count = 0;
-
-    // calc number of not all's (pCount)
-    // count variable to keep track (p2Count)
-    // if count == tags - alls put in output
 
     for(var i = 0; i < all.length; i++) {
         for(var j = 0; j < tags_array.length; j++) {
