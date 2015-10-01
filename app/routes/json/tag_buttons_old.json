@@ -1,5 +1,15 @@
 [
     {
+        "id":1,
+        "name": "type",
+        "list": [
+            "conferences",
+            "festivals",
+            "meetups",
+            "resorts"
+        ]
+    },
+    {
         "id":2,
         "name": "geo",
         "list": [
@@ -63,6 +73,13 @@
             "150",
             "250",
             "5000"
+        ]
+    },
+    {
+        "id":4,
+        "name": "date",
+        "list":[
+
         ]
     }
 ]

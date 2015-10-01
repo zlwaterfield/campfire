@@ -35,7 +35,6 @@ angular.module('jawa')
                 var key = keys[i], value = urlObj[key];
 
                 for(var j = 0; j < $scope.unused_buttons.length; j++) {
-                    console.log(key);
                     if(key == $scope.unused_buttons[j].name) {
                         $scope.addToSearch($scope.unused_buttons[j]);
                     }
@@ -80,7 +79,6 @@ angular.module('jawa')
     };
 
     $scope.addToSearch = function (veg) {
-        console.log(veg);
         for(var i in $scope.unused_buttons) {
             if($scope.unused_buttons[i].id == veg.id) {
                 if(veg.name == 'date') {
@@ -132,20 +130,25 @@ angular.module('jawa')
     $scope.buildUrl = function (urlObj, callback) {
 
         var builtUrl ='/explore/?';
+        var type = 'cat1';
         for(var keys = Object.keys(urlObj), i = 0, end = keys.length; i < end; i++) {
-            var key = keys[i], value = urlObj[key];
+            var key = keys[i], 
+                value = urlObj[key];
 
             builtUrl += key + '=' + value;
 
             if(i != keys.length -1) {
                 builtUrl += '&&';
             }
+            if(key == 'type') {
+                type = value;
+            }
         }
 
         window.history.pushState('', 'Jawa1', builtUrl);
         var search = window.location.search;
-        var url = '/api/' + search;
-
+        var url = '/api/conferences/' + type + search;
+        console.log(url);
         callback(url);
     };
 

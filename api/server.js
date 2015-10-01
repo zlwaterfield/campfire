@@ -1,5 +1,5 @@
 var express = require('express'),
-    users = require('./routes/users'),
+    api = require('./routes/base'),
     app = express();
 
 app.configure(function () {
@@ -11,8 +11,7 @@ app.use("/styles", express.static('public/styles'));
 app.use("/fonts", express.static('public/fonts'));
 
 app.get('/', express.static('public'));
-app.get('/get', users.getInfo);
-app.get('/post', users.postInfo);
+app.get('/api/:type/:cat', api.getConferences);
 
 app.get('*', function(req, res, next) {
     res.status(500).send('Sorry this URL is not found please refer to the documentation at https://github.com/zlwaterfield/wilted');

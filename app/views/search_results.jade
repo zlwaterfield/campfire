@@ -2,7 +2,7 @@
     div(ng-show="loading")
         include loading-animation
     md-grid-list(md-cols-sm="1" md-cols-md="2" md-cols-gt-md="6" md-row-height-gt-md="1:1" md-row-height="4:3" md-gutter="30px" md-gutter-gt-sm="15px")
-        md-grid-tile.list-item(ng-repeat="l in tagged_l" md-rowspan="1" md-colspan="2" md-colspan-sm="1" ng-click="goToItem(l.id)")
+        md-grid-tile.list-item(ng-repeat="l in tagged_l" md-rowspan="1" md-colspan="2" md-colspan-sm="1" ng-click="goToItem(l.event_id)")
             div.list-item-container
                 div.list-item-left
                     img.list-item-image(src="/images/filler.jpg")
@@ -16,10 +16,10 @@
                                 | {{l.location}}
                         li
                             span
-                                | {{l.start_date | date:'mediumDate'}}
+                                | {{l.date_start | date:'mediumDate'}}
                         li
                             span
-                                | {{l.price | currency}}
+                                | {{l.price_current | currency}}
         //md-button.md-raised.loadmore(ng-click="loadMore()")
         //    h4
         //    | Load More

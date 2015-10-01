@@ -15,7 +15,7 @@ function getConfig(file){
     return readJsonFileSync(filepath);
 }
 
-var all =  getConfig('json/all.json');
+// var all =  getConfig('json/all.json');
 var tags =  getConfig('json/tags.json');
 var btns =  getConfig('json/tag_btns.json');
 
@@ -37,26 +37,26 @@ exports.getByTag = function(req, res) {
         m++;
     }
 
-    var outputs = {};
-    var jsonCount = 0;
+    // var outputs = {};
+    // var jsonCount = 0;
 
-    for(var i = 0; i < all.length; i++) {
-        for(var j = 0; j < tags_array.length; j++) {
-            for(var k = 0; k < all[i].tag.length; k++) {
-                if (all[i].tag[k] == tags_array[j]) {
-                    jsonCount++;
-                    outputs[i] = all[i];
+    // for(var i = 0; i < all.length; i++) {
+    //     for(var j = 0; j < tags_array.length; j++) {
+    //         for(var k = 0; k < all[i].tag.length; k++) {
+    //             if (all[i].tag[k] == tags_array[j]) {
+    //                 jsonCount++;
+    //                 outputs[i] = all[i];
 
-                }
-            }
-        }
-    }
+    //             }
+    //         }
+    //     }
+    // }
 
-    if(jsonCount == 0) {
-        outputs = all;
-    }
+    // if(jsonCount == 0) {
+    //     outputs = all;
+    // }
 
-    res.send(outputs);
+    // res.send(outputs);
 };
 
 exports.getListOfTags = function(req, res) {
@@ -65,17 +65,4 @@ exports.getListOfTags = function(req, res) {
 
 exports.getTagBtns = function(req, res) {
     res.send(btns);
-};
-
-
-exports.getItem = function(req, res) {
-    var id = req.params.id;
-    var item = {};
-
-    for(var i = 0; i < all.length; i++) {
-        if(all[i].id == id) {
-            item = all[i];
-        }
-    }
-    res.send(item);
 };

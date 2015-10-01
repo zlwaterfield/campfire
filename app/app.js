@@ -21,6 +21,7 @@ var index = require('./routes/index');
 var item = require('./routes/item');
 //var index_specific = require('./routes/unused/index_specific');
 var api = require('./routes/api');
+var base_api = require('./routes/base');
 
 // Explore Routes
 app.use('/', index);
@@ -30,8 +31,10 @@ app.use('/item/:id', item);
 // Api Routes
 app.get('/api/', api.getByTag);
 app.get('/api/tags', api.getListOfTags);
+
 app.get('/api/tag_btns', api.getTagBtns);
-app.get('/api/item/:id', api.getItem);
+app.get('/api/item/:id', base_api.getItem);
+app.get('/api/:type/:cat', base_api.getConferences);
 
 // Other redirect
 app.use('*', function(req, res) {

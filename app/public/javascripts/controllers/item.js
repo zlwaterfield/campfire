@@ -14,11 +14,10 @@ angular.module('jawa')
     var url = '/api/item/' + id;
 
     Item.query(url).then(function (data) {
-        $scope.item = data;
+        $scope.item = data[0];
     });
 
     $scope.backToExplore = function() {
         window.location = '/explore/' + search;
     }
-
   });
