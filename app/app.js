@@ -29,9 +29,6 @@ app.use('/explore/', index);
 app.use('/item/:id', item);
 
 // Api Routes
-app.get('/api/', api.getByTag);
-app.get('/api/tags', api.getListOfTags);
-
 app.get('/api/tag_btns', api.getTagBtns);
 app.get('/api/item/:id', base_api.getItem);
 app.get('/api/:type/:cat', base_api.getConferences);

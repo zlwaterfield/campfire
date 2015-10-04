@@ -8,7 +8,7 @@
  * Factory of the jawa
  */
 angular.module('jawa')
-  .factory('Item', function($http, $q) {
+  .factory('Ajax', function($http, $q) {
     return {
       query: function(url) {
 

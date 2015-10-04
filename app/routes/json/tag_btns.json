@@ -2,6 +2,8 @@
     {
         "id":2,
         "name": "geo",
+        "title": "Location",
+        "type": "dropdown",
         "list": [
            "Barcelona",
            "Madrid",
@@ -58,6 +60,20 @@
     {
         "id":3,
         "name": "price",
+        "title": "Price",
+        "type": "range",
+        "list": [
+            "49.5",
+            "150",
+            "250",
+            "5000"
+        ]
+    },
+    {
+        "id":4,
+        "name": "date",
+        "title": "Date",
+        "type" : "date",
         "list": [
             "49.5",
             "150",

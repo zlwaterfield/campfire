@@ -8,12 +8,12 @@
  * Controller of the jawa
  */
 angular.module('jawa')
-  .controller('ItemCtrl',function($scope, $http, Item) {
+  .controller('ItemCtrl',function($scope, $http, Ajax) {
     var u = window.location.pathname;
     var id = u.substring(u.indexOf('item') + 5);
     var url = '/api/item/' + id;
 
-    Item.query(url).then(function (data) {
+    Ajax.query(url).then(function (data) {
         $scope.item = data[0];
     });
 

@@ -8,7 +8,7 @@
  * Controller of the jawa
  */
 angular.module('jawa')
-  .controller('ExploreCtrl',function($scope, $http) {
+  .controller('ExploreCtrl',function($scope, $http, Ajax, _) {
     $scope.loading = true;
     $scope.curr_buttons = [];
     $scope.curr_dates_buttons = [];
@@ -24,32 +24,27 @@ angular.module('jawa')
 
     $scope.onLoad = function () {
 
-        $http.get('/api/tag_btns').
-            success(function(data, status, headers, config) {
-                $scope.unused_buttons = data;
-            });
+        Ajax.query('/api/tag_btns').then(function (data) {
+            $scope.unused_buttons = data;
+        });
 
         $scope.parsedUrl(window.location.search, null, null, false, function(urlObj) {
-
-            for(var keys = Object.keys(urlObj), i = 0, end = keys.length; i < end; i++) {
-                var key = keys[i], value = urlObj[key];
-
+            var counter = 0;
+            _.map(urlObj, function(value, key) {
                 for(var j = 0; j < $scope.unused_buttons.length; j++) {
                     if(key == $scope.unused_buttons[j].name) {
                         $scope.addToSearch($scope.unused_buttons[j]);
                     }
                 }
-                $scope.userStat[i] = urlObj[key];
-            }
+                $scope.userStat[counter] = value;
+                counter++;
+            })
 
             $scope.buildUrl(urlObj, function(url) {
-                $http.get(url).
-                    success(function(data, status, headers, config) {
-                        $scope.tagged_l = data;
-                        $scope.loading = false;
-                    }).
-                    error(function(data, status, headers, config) {
-                    });
+                Ajax.query(url).then(function (data) {
+                    $scope.tagged_l = data;
+                    $scope.loading = false;
+                });
             });
         });
     };
@@ -61,13 +56,10 @@ angular.module('jawa')
         $scope.parsedUrl(window.location.search, newKey, newValue, false, function(urlObj) {
 
             $scope.buildUrl(urlObj, function(url) {
-                $http.get(url).
-                    success(function(data, status, headers, config) {
-                        $scope.tagged_l = data;
-                        $scope.loading = false;
-                    }).
-                    error(function(data, status, headers, config) {
-                    });
+                Ajax.query(url).then(function (data) {
+                    $scope.tagged_l = data;
+                    $scope.loading = false;
+                });
             });
         });
     };
@@ -91,11 +83,6 @@ angular.module('jawa')
         }
     };
 
-    //$scope.clearTags = function () {
-    //    window.history.pushState('', 'Jawa1', '/');
-    //    $scope.paramUpdate(null, null);
-    //};
-
     $scope.removeTag = function(tag) {
         $scope.loading = true;
         $scope.tagged_l = {};
@@ -103,28 +90,25 @@ angular.module('jawa')
         $scope.parsedUrl(window.location.search, tag.name, null, true, function(urlObj){
 
             $scope.buildUrl(urlObj, function(url) {
-                $http.get(url).
-                    success(function(data, status, headers, config) {
-                        $scope.tagged_l = data;
-                        $scope.loading = false;
-                    }).
-                    error(function(data, status, headers, config) {
-                    });
+               Ajax.query(url).then(function (data) {
+                    $scope.tagged_l = data;
+                    $scope.loading = false;
+                });
             });
 
         });
-        for(var i in $scope.curr_buttons) {
-            if($scope.curr_buttons[i].id == tag.id) {
-                $scope.curr_buttons.splice(i,1);
+        _.map($scope.curr_buttons, function(obj, index) {
+            if(obj.id == tag.id) {
+                $scope.curr_buttons.splice(index,1);
                 $scope.unused_buttons.push(tag);
             }
-        }
-        for(var i in $scope.curr_dates_buttons) {
-            if($scope.curr_dates_buttons[i].id == tag.id) {
-                $scope.curr_dates_buttons.splice(i,1);
+        })
+        _.map($scope.curr_dates_buttons, function(obj, index) {
+            if(obj.id == tag.id) {
+                $scope.curr_dates_buttons.splice(index,1);
                 $scope.unused_buttons.push(tag);
             }
-        }
+        })
     };
 
     $scope.buildUrl = function (urlObj, callback) {
@@ -148,7 +132,6 @@ angular.module('jawa')
         window.history.pushState('', 'Jawa1', builtUrl);
         var search = window.location.search;
         var url = '/api/conferences/' + type + search;
-        console.log(url);
         callback(url);
     };
 
@@ -157,36 +140,33 @@ angular.module('jawa')
         var parser = document.createElement('a');
         parser.href = url;
 
-        $http.get('/api/tags').
-            success(function(data, status, headers, config) {
-                var present = false;
-                var queries = parser.search.replace(/^\?/, '').split('&');
+       Ajax.query(url).then(function (data) {
+            var present = false;
+            var queries = parser.search.replace(/^\?/, '').split('&');
 
-                for(var i = 0; i < queries.length; i++) {
-                    var split = queries[i].split('=');
-                    if(remove == true && split[0] == newKey){
-                        delete searchObject[split[0]];
-                    } else if(split[0] == newKey) {
-                        searchObject[split[0]] = newValue;
-                        present = true
-                    } else {
-                        searchObject[split[0]] = split[1];
-                    }
+            for(var i = 0; i < queries.length; i++) {
+                var split = queries[i].split('=');
+                if(remove == true && split[0] == newKey){
+                    delete searchObject[split[0]];
+                } else if(split[0] == newKey) {
+                    searchObject[split[0]] = newValue;
+                    present = true
+                } else {
+                    searchObject[split[0]] = split[1];
                 }
-                if(present == false && remove == false && newKey != null) {
-                    searchObject[newKey] = newValue;
-                }
+            }
+            if(present == false && remove == false && newKey != null) {
+                searchObject[newKey] = newValue;
+            }
 
-                for(var j in searchObject) {
-                    if(searchObject[j] === undefined) {
-                        delete searchObject[j];
-                    }
+            for(var j in searchObject) {
+                if(searchObject[j] === undefined) {
+                    delete searchObject[j];
                 }
+            }
 
-                return callback(searchObject);
-            }).
-            error(function(data, status, headers, config) {
-            });
+            return callback(searchObject);
+        });
     };
     $scope.onLoad();
 
