@@ -1,6 +1,9 @@
-### Jawa
+## Firewood
 
-## File Org
+### Run locally
+###### Must have node installed `https://nodejs.org/en/`
 
-	- `api`
-	- `app`
+  - Clone repo `git clone <repo url>`
+  - `npm install`
+  - `node bin/www` 
+  - Open browser `http://localhost:3000`

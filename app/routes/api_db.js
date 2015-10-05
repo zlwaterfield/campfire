@@ -30,8 +30,6 @@ exports.getConferences = function(req, res) {
     var query = buildsentence(req.params.type, req.params.cat, req.query)
     var params = buildParams(req.query)
 
-    // console.log(query, params);
-
     client.execute(query, params, {prepare: true}, function (err, result) {
         // Run next function in series
         if(!err) {
@@ -58,6 +56,7 @@ exports.getItem = function(req, res) {
 };
 
 function buildsentence(type, cat, params) {
+  console.log(type, cat, params);
   var catid = '1';
   var sentence = "SELECT * from event." + type + "_cat";
   var numOfParams = _.keys(params).length;
@@ -81,7 +80,6 @@ function buildsentence(type, cat, params) {
       catid = categories[i].id;
     }
   }
-  console.log(type, cat, catid);
 
   if(numOfParams > 0) {
     sentence += " WHERE category =" + catid + " AND ";
@@ -112,6 +110,5 @@ function buildParams(params) {
       }
     }
   })
-  console.log(params)
   return _.values(params);
 }

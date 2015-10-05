@@ -17,11 +17,10 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 // Routes
-var index = require('./routes/index');
-var item = require('./routes/item');
-//var index_specific = require('./routes/unused/index_specific');
-var api = require('./routes/api');
-var base_api = require('./routes/base');
+var index = require('./routes/views/index');
+var item = require('./routes/views/item');
+var api = require('./routes/api_static');
+var base_api = require('./routes/api_db');
 
 // Explore Routes
 app.use('/', index);
