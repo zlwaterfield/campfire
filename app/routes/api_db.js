@@ -27,10 +27,44 @@ var client = new cassandra.Client({contactPoints: ['45.55.153.170'], keyspace: '
  ============================================*/
 
 exports.getConferences = function(req, res) {
-    var query = buildsentence(req.params.type, req.params.cat, req.query)
-    var params = buildParams(req.query)
-
-    client.execute(query, params, {prepare: true}, function (err, result) {
+    var category = 1;//req.params.cat;
+    
+    var requestQuery = sanitizeRequestQuery(req.query);
+    var date = requestQuery['date'];
+    var geohash = requestQuery['geo'];
+    var price = requestQuery['price'];
+    
+    var tableName = getTableName('conferences', category, ['date', 'geo', 'price'], requestQuery);
+    var predicates = [];
+    var statementParams = [];
+    
+    if (category) {
+        predicates.push('category=?')
+        statementParams.push(category);
+    }
+    
+    if (date) {
+        predicates.push('date_start=?');
+        statementParams.push(date);
+    }
+    
+    if (geohash) {
+        predicates.push('geohash=?');
+        statementParams.push(geohash);
+    }
+    
+    if (price) {
+        predicates.push('price_current=?');
+        statementParams.push(price);
+    }
+    
+    var statement = 'SELECT * FROM campfire.' + tableName;
+    if (predicates.length > 0) {
+        statement += ' WHERE ' + predicates.join(' AND ');
+    }
+    statement += ' LIMIT 10';
+    
+    client.execute(statement, statementParams, {prepare: true}, function (err, result) {
         // Run next function in series
         if(!err) {
           res.send(result.rows);
@@ -42,10 +76,11 @@ exports.getConferences = function(req, res) {
 
 exports.getItem = function(req, res) {
     var id = req.params.id;
-    var query = 'SELECT * FROM conferences WHERE event_id = ?';
-    var params = [id];
-
-    client.execute(query, params, {prepare: true}, function (err, result) {
+    
+    var statement = 'SELECT * FROM conferences WHERE event_id=?';
+    var statementParams = [id];
+    
+    client.execute(query, statementParams, {prepare: true}, function (err, result) {
         // Run next function in series
         if(!err) {
           res.send(result.rows);
@@ -55,60 +90,45 @@ exports.getItem = function(req, res) {
     });
 };
 
-function buildsentence(type, cat, params) {
-  console.log(type, cat, params);
-  var catid = '1';
-  var sentence = "SELECT * from event." + type + "_cat";
-  var numOfParams = _.keys(params).length;
-  var choices = ["geo", "price", "date"]
-  var p = {"geo" : "geohash","date" : "date_start","price" : "price_current"}
-  var first = true;
-
-  _.map(params, function(value, key) {
-    sentence += "_" + key;
-  })
-
-  if(numOfParams < 3) {
-    var a = _.difference(choices, _.keys(params));
-    for(var i =0; i < a.length; i++){
-      sentence += "_" + a[i];
+function getTableName(tableType, category, clusteringColumns, params) {
+    console.log('getTableName', tableType, category, clusteringColumns, params);
+    
+    var tableName = tableType;
+    var tableNameSuffix = '';
+    
+    if (category) {
+        tableName += '_cat'
+        
+        for (var i = 0; i < clusteringColumns.length; ++i) {
+            var clusteringColumn = clusteringColumns[i];
+            var suffix = '_' + clusteringColumn;
+            
+            if (params[clusteringColumn]) {
+                tableName += suffix;
+            } else {
+                // A required clustering column was not specified
+                // Append it to the end of the table name
+                tableNameSuffix += suffix;
+            }
+        }
     }
-  }
-
-  for(var i = 0; i < categories.length; i++) {
-    if(categories[i].name == cat) {
-      catid = categories[i].id;
-    }
-  }
-
-  if(numOfParams > 0) {
-    sentence += " WHERE category =" + catid + " AND ";
-
-    _.map(params, function(value, key) {
-      if(first) {
-        first = false;
-      } else {
-        sentence += " AND ";
-      }
-      sentence += p[key] + " =?";
-    })
-  }
-  return sentence + " LIMIT 10";
+    
+    return tableName + tableNameSuffix;
 }
 
-function buildParams(params) {
-  _.map(params, function(value, key) {
+function sanitizeRequestQuery(query) {
+  _.map(query, function(value, key) {
     if(key === 'price') {
-      params[key] = parseFloat(params[key]);
+      query[key] = parseFloat(query[key]);
     } else if (key == 'geo') {
-      var city = params[key];
+      var city = query[key];
 
       for(var i = 0; i <geohash.length; i++) {
         if(geohash[i].name == city) {
-          params[key] = geohash[i].geohash;
+          query[key] = geohash[i].geohash;
         }
       }
     }
   })
-  return _.values(params);
+  return _.values(query);
 }
