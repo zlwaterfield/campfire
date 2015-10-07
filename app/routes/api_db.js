@@ -18,8 +18,8 @@ function getConfig(file){
     return readJsonFileSync(filepath);
 }
 
-var geohash =  getConfig('json/geohash.json');
-var categories =  getConfig('json/categories.json');
+var geohashData =  getConfig('json/geohash.json');
+var categoryData =  getConfig('json/categories.json');
 var client = new cassandra.Client({contactPoints: ['45.55.153.170'], keyspace: 'event'});
 
 /*============================================
@@ -27,7 +27,7 @@ var client = new cassandra.Client({contactPoints: ['45.55.153.170'], keyspace: '
  ============================================*/
 
 exports.getConferences = function(req, res) {
-    var category = 1;//req.params.cat;
+    var category = categoryData[req.params.cat];
     
     var requestQuery = sanitizeRequestQuery(req.query);
     var date = requestQuery['date'];
@@ -120,13 +120,7 @@ function sanitizeRequestQuery(query) {
     for (var key in query) {
         switch (key) {
             case 'geo': {
-                var city = query[key];
-
-                for(var i = 0; i <geohash.length; i++) {
-                  if(geohash[i].name == city) {
-                    query[key] = geohash[i].geohash;
-                  }
-                }
+                query[key] = geohashData.cities[query[key]];
                 break;
             }
             case 'price': {

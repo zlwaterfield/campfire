@@ -1,202 +1,106 @@
-[
-   {
-      "geohash": "sp3e3ttg4w62",
-      "name": "Barcelona"
-   },
-   {
-      "geohash": "sp4tudd7j3u7",
-      "name": "Madrid"
-   },
-   {
-      "geohash": "spv2c4864r19",
-      "name": "Monte Carlo"
-   },
-   {
-      "geohash": "sr2yk7wjpn5e",
-      "name": "Rome"
-   },
-   {
-      "geohash": "ssevn4q5ty5n",
-      "name": "Johannesburg"
-   },
-   {
-      "geohash": "sxk96fk3s3hv",
-      "name": "Istanbul"
-   },
-   {
-      "geohash": "th1jvpjkdwhv",
-      "name": "Sao Paulo"
-   },
-   {
-      "geohash": "tu949hq24b4t",
-      "name": "Miami"
-   },
-   {
-      "geohash": "twyv2d3sk1wp",
-      "name": "Washington, DC"
-   },
-   {
-      "geohash": "txd8bzrt2qup",
-      "name": "Boston"
-   },
-   {
-      "geohash": "txhxs592wmqe",
-      "name": "New York City"
-   },
-   {
-      "geohash": "txj7q2wtx5cb",
-      "name": "Philadelphia"
-   },
-   {
-      "geohash": "tyh002fvjs0f",
-      "name": "Atlanta"
-   },
-   {
-      "geohash": "tz0y5cv434qn",
-      "name": "Pittsburgh"
-   },
-   {
-      "geohash": "tzb2wg36fn7j",
-      "name": "Toronto"
-   },
-   {
-      "geohash": "tzqq524j9e7j",
-      "name": "Chicago"
-   },
-   {
-      "geohash": "u09tvqpfcsgx",
-      "name": "Paris"
-   },
-   {
-      "geohash": "u0nd8uzndrhv",
-      "name": "Milan"
-   },
-   {
-      "geohash": "u10j4bsg4vyz",
-      "name": "London"
-   },
-   {
-      "geohash": "u173zt044k2v",
-      "name": "Amsterdam"
-   },
-   {
-      "geohash": "u281z4qsg9kw",
-      "name": "Munich"
-   },
-   {
-      "geohash": "u3butzxby979",
-      "name": "Copenhagen"
-   },
-   {
-      "geohash": "u4xth9efj1uz",
-      "name": "Oslo"
-   },
-   {
-      "geohash": "u6sce0t4ucu8",
-      "name": "Stockholm"
-   },
-   {
-      "geohash": "ucftpuzxk9hr",
-      "name": "Moscow"
-   },
-   {
-      "geohash": "v8h6f564d7dv",
-      "name": "Montreal"
-   },
-   {
-      "geohash": "w21z6h8v539f",
-      "name": "Singapore"
-   },
-   {
-      "geohash": "wdw4cqjw8kgr",
-      "name": "Manila"
-   },
-   {
-      "geohash": "wecnwpekx24g",
-      "name": "Hong Kong"
-   },
-   {
-      "geohash": "wj243s0x6hxj",
-      "name": "New Orleans"
-   },
-   {
-      "geohash": "wj7c61wnvkth",
-      "name": "Houston"
-   },
-   {
-      "geohash": "wjms06g7h0dy",
-      "name": "Austin"
-   },
-   {
-      "geohash": "wjuf6wv6jedx",
-      "name": "Dallas"
-   },
-   {
-      "geohash": "wmzwq1kkr7un",
-      "name": "Phoenix"
-   },
-   {
-      "geohash": "wpfrf7cw8j87",
-      "name": "Minneapolis"
-   },
-   {
-      "geohash": "wtg645e4sn5b",
-      "name": "San Diego"
-   },
-   {
-      "geohash": "wtw3kzc95jw3",
-      "name": "Shanghai"
-   },
-   {
-      "geohash": "ww3vkzenfrsk",
-      "name": "Las Vegas"
-   },
-   {
-      "geohash": "wwh1dye58snc",
-      "name": "Los Angeles"
-   },
-   {
-      "geohash": "wwwsmt4yu8uw",
-      "name": "San Jose"
-   },
-   {
-      "geohash": "wwxncwjpeve7",
-      "name": "San Francisco"
-   },
-   {
-      "geohash": "wx4g06eexknq",
-      "name": "Beijing"
-   },
-   {
-      "geohash": "wydm9ny3fs3q",
-      "name": "Seoul"
-   },
-   {
-      "geohash": "xn76fxfq2c1x",
-      "name": "Tokyo"
-   },
-   {
-      "geohash": "xnxp4eybjjcy",
-      "name": "Melbourne"
-   },
-   {
-      "geohash": "xq588ugmfms9",
-      "name": "Sydney"
-   },
-   {
-      "geohash": "xys3869u11ee",
-      "name": "Auckland"
-   },
-   {
-      "geohash": "y8p4zwwjprnb",
-      "name": "Portland"
-   },
-   {
-      "geohash": "y8qyzg04xg6f",
-      "name": "Seattle"
-   },
-   {
-      "geohash": "y8z83etu81pu",
-      "name": "Vancouver"
-   }
-]
+{
+    "cities": {
+        "Barcelona": "sp3e3ttg4w62",
+        "Madrid": "sp4tudd7j3u7",
+        "Monte Carlo": "spv2c4864r19",
+        "Rome": "sr2yk7wjpn5e",
+        "Johannesburg": "ssevn4q5ty5n",
+        "Istanbul": "sxk96fk3s3hv",
+        "Sao Paulo": "th1jvpjkdwhv",
+        "Miami": "tu949hq24b4t",
+        "Washington, DC": "twyv2d3sk1wp",
+        "Boston": "txd8bzrt2qup",
+        "New York City": "txhxs592wmqe",
+        "Philadelphia": "txj7q2wtx5cb",
+        "Atlanta": "tyh002fvjs0f",
+        "Pittsburgh": "tz0y5cv434qn",
+        "Toronto": "tzb2wg36fn7j",
+        "Chicago": "tzqq524j9e7j",
+        "Paris": "u09tvqpfcsgx",
+        "Milan": "u0nd8uzndrhv",
+        "London": "u10j4bsg4vyz",
+        "Amsterdam": "u173zt044k2v",
+        "Munich": "u281z4qsg9kw",
+        "Copenhagen": "u3butzxby979",
+        "Oslo": "u4xth9efj1uz",
+        "Stockholm": "u6sce0t4ucu8",
+        "Moscow": "ucftpuzxk9hr",
+        "Montreal": "v8h6f564d7dv",
+        "Singapore": "w21z6h8v539f",
+        "Manila": "wdw4cqjw8kgr",
+        "Hong Kong": "wecnwpekx24g",
+        "New Orleans": "wj243s0x6hxj",
+        "Houston": "wj7c61wnvkth",
+        "Austin": "wjms06g7h0dy",
+        "Dallas": "wjuf6wv6jedx",
+        "Phoenix": "wmzwq1kkr7un",
+        "Minneapolis": "wpfrf7cw8j87",
+        "San Diego": "wtg645e4sn5b",
+        "Shanghai": "wtw3kzc95jw3",
+        "Las Vegas": "ww3vkzenfrsk",
+        "Los Angeles": "wwh1dye58snc",
+        "San Jose": "wwwsmt4yu8uw",
+        "San Francisco": "wwxncwjpeve7",
+        "Beijing": "wx4g06eexknq",
+        "Seoul": "wydm9ny3fs3q",
+        "Tokyo": "xn76fxfq2c1x",
+        "Melbourne": "xnxp4eybjjcy",
+        "Sydney": "xq588ugmfms9",
+        "Auckland": "xys3869u11ee",
+        "Portland": "y8p4zwwjprnb",
+        "Seattle": "y8qyzg04xg6f",
+        "Vancouver": "y8z83etu81pu"
+    },
+    "geohashes": {
+       "sp3e3ttg4w62": "Barcelona",
+       "sp4tudd7j3u7": "Madrid",
+       "spv2c4864r19": "Monte Carlo",
+       "sr2yk7wjpn5e": "Rome",
+       "ssevn4q5ty5n": "Johannesburg",
+       "sxk96fk3s3hv": "Istanbul",
+       "th1jvpjkdwhv": "Sao Paulo",
+       "tu949hq24b4t": "Miami",
+       "twyv2d3sk1wp": "Washington, DC",
+       "txd8bzrt2qup": "Boston",
+       "txhxs592wmqe": "New York City",
+       "txj7q2wtx5cb": "Philadelphia",
+       "tyh002fvjs0f": "Atlanta",
+       "tz0y5cv434qn": "Pittsburgh",
+       "tzb2wg36fn7j": "Toronto",
+       "tzqq524j9e7j": "Chicago",
+       "u09tvqpfcsgx": "Paris",
+       "u0nd8uzndrhv": "Milan",
+       "u10j4bsg4vyz": "London",
+       "u173zt044k2v": "Amsterdam",
+       "u281z4qsg9kw": "Munich",
+       "u3butzxby979": "Copenhagen",
+       "u4xth9efj1uz": "Oslo",
+       "u6sce0t4ucu8": "Stockholm",
+       "ucftpuzxk9hr": "Moscow",
+       "v8h6f564d7dv": "Montreal",
+       "w21z6h8v539f": "Singapore",
+       "wdw4cqjw8kgr": "Manila",
+       "wecnwpekx24g": "Hong Kong",
+       "wj243s0x6hxj": "New Orleans",
+       "wj7c61wnvkth": "Houston",
+       "wjms06g7h0dy": "Austin",
+       "wjuf6wv6jedx": "Dallas",
+       "wmzwq1kkr7un": "Phoenix",
+       "wpfrf7cw8j87": "Minneapolis",
+       "wtg645e4sn5b": "San Diego",
+       "wtw3kzc95jw3": "Shanghai",
+       "ww3vkzenfrsk": "Las Vegas",
+       "wwh1dye58snc": "Los Angeles",
+       "wwwsmt4yu8uw": "San Jose",
+       "wwxncwjpeve7": "San Francisco",
+       "wx4g06eexknq": "Beijing",
+       "wydm9ny3fs3q": "Seoul",
+       "xn76fxfq2c1x": "Tokyo",
+       "xnxp4eybjjcy": "Melbourne",
+       "xq588ugmfms9": "Sydney",
+       "xys3869u11ee": "Auckland",
+       "y8p4zwwjprnb": "Portland",
+       "y8qyzg04xg6f": "Seattle",
+       "y8z83etu81pu": "Vancouver"
+    }
+}
