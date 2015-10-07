@@ -117,18 +117,27 @@ function getTableName(tableType, category, clusteringColumns, params) {
 }
 
 function sanitizeRequestQuery(query) {
-  _.map(query, function(value, key) {
-    if(key === 'price') {
-      query[key] = parseFloat(query[key]);
-    } else if (key == 'geo') {
-      var city = query[key];
+    for (var key in query) {
+        switch (key) {
+            case 'geo': {
+                var city = query[key];
 
-      for(var i = 0; i <geohash.length; i++) {
-        if(geohash[i].name == city) {
-          query[key] = geohash[i].geohash;
+                for(var i = 0; i <geohash.length; i++) {
+                  if(geohash[i].name == city) {
+                    query[key] = geohash[i].geohash;
+                  }
+                }
+                break;
+            }
+            case 'price': {
+                query[key] = parseFloat(query[key]);
+                break;
+            }
+            default: {
+                // Do nothing
+            }
         }
-      }
     }
-  })
-  return _.values(query);
+    
+    return query;
 }
