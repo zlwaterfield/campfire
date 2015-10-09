@@ -3,7 +3,6 @@
         "id":2,
         "name": "geo",
         "title": "Location",
-        "type": "dropdown",
         "list": [
            "Barcelona",
            "Madrid",
@@ -61,24 +60,21 @@
         "id":3,
         "name": "price",
         "title": "Price",
-        "type": "range",
         "list": [
-            "49.5",
-            "150",
-            "250",
-            "5000"
+            "Under 500",
+            "Under 1000",
+            "All Prices"
         ]
     },
     {
         "id":4,
         "name": "date",
         "title": "Date",
-        "type" : "date",
         "list": [
-            "49.5",
-            "150",
-            "250",
-            "5000"
+            "Next Month",
+            "Next 3 Months",
+            "This Year",
+            "Next Year"
         ]
     }
 ]
