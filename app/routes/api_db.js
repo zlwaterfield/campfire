@@ -29,12 +29,25 @@ var client = new cassandra.Client({contactPoints: ['45.55.153.170'], keyspace: '
 exports.getConferences = function(req, res) {
     var category = categoryData[req.params.cat];
     
-    var requestQuery = sanitizeRequestQuery(req.query);
-    var date = requestQuery['date'];
-    var geohash = requestQuery['geo'];
-    var price = requestQuery['price'];
+    var requestQuery = req.query;
     
-    var tableName = getTableName('conferences', category, ['date', 'geo', 'price'], requestQuery);
+    // TODO: Remove
+    var city = geohashData.cities[requestQuery['geo']];
+    var date = requestQuery['date'];
+    var price = parseFloat(requestQuery['price']);
+    
+    var cityGeohash = geohashData.cities[requestQuery['near']];
+    var citySearchRadius = requestQuery['within'];
+    var dateAfter = requestQuery['after'];
+    var dateBefore = requestQuery['before'];
+    var priceOver = parseFloat(requestQuery['over']);
+    var priceUnder = parseFloat(requestQuery['under']);
+    
+    var hasCityGeohashEquality = (!!cityGeohash || !!city);
+    var hasDateEquality = !!date;
+    var hasPriceEquality = !!price;
+    
+    var tableName = getTableName('conferences', category, {'date': hasDateEquality, 'price': hasPriceEquality, 'geo': hasCityGeohashEquality});
     var predicates = [];
     var statementParams = [];
     
@@ -46,16 +59,52 @@ exports.getConferences = function(req, res) {
     if (date) {
         predicates.push('date_start=?');
         statementParams.push(date);
-    }
-    
-    if (geohash) {
-        predicates.push('geohash=?');
-        statementParams.push(geohash);
+    } else {
+        if (dateAfter) {
+            predicates.push('date_start>=?');
+            statementParams.push(dateAfter);
+        }
+        
+        if (dateBefore) {
+            predicates.push('date_start<=?');
+            statementParams.push(dateBefore);
+        }
     }
     
     if (price) {
         predicates.push('price_current=?');
         statementParams.push(price);
+    } else if (hasDateEquality) {
+            // Can only support one inequality predicate currently
+        if (priceOver) {
+            predicates.push('price_current>=?');
+            statementParams.push(priceOver);
+        }
+        
+        if (priceUnder) {
+            predicates.push('price_current<=?');
+            statementParams.push(priceUnder);
+        }
+    }
+    
+    if (city) {
+        predicates.push('geohash=?');
+        statementParams.push(city);
+    } else if (cityGeohash) {
+        if (citySearchRadius) {
+            if (hasDateEquality && hasPriceEquality) {
+                // Can only support one inequality predicate currently
+                // TODO
+                predicates.push('geohash>=?');
+                statementParams.push(cityGeohash);
+            
+                predicates.push('geohash<=?');
+                statementParams.push(cityGeohash);
+            }
+        } else {
+            predicates.push('geohash=?');
+            statementParams.push(cityGeohash);
+        }
     }
     
     var statement = 'SELECT * FROM campfire.' + tableName;
@@ -63,6 +112,8 @@ exports.getConferences = function(req, res) {
         statement += ' WHERE ' + predicates.join(' AND ');
     }
     statement += ' LIMIT 10';
+    
+    console.log(statement, statementParams);
     
     client.execute(statement, statementParams, {prepare: true}, function (err, result) {
         // Run next function in series
@@ -90,8 +141,8 @@ exports.getItem = function(req, res) {
     });
 };
 
-function getTableName(tableType, category, clusteringColumns, params) {
-    console.log('getTableName', tableType, category, clusteringColumns, params);
+function getTableName(tableType, category, clusteringColumns) {
+    console.log('getTableName', clusteringColumns);
     
     var tableName = tableType;
     var tableNameSuffix = '';
@@ -99,11 +150,9 @@ function getTableName(tableType, category, clusteringColumns, params) {
     if (category) {
         tableName += '_cat'
         
-        for (var i = 0; i < clusteringColumns.length; ++i) {
-            var clusteringColumn = clusteringColumns[i];
+        for (var clusteringColumn in clusteringColumns) {
             var suffix = '_' + clusteringColumn;
-            
-            if (params[clusteringColumn]) {
+            if (clusteringColumns[clusteringColumn]) {
                 tableName += suffix;
             } else {
                 // A required clustering column was not specified
@@ -114,24 +163,4 @@ function getTableName(tableType, category, clusteringColumns, params) {
     }
     
     return tableName + tableNameSuffix;
-}
-
-function sanitizeRequestQuery(query) {
-    for (var key in query) {
-        switch (key) {
-            case 'geo': {
-                query[key] = geohashData.cities[query[key]];
-                break;
-            }
-            case 'price': {
-                query[key] = parseFloat(query[key]);
-                break;
-            }
-            default: {
-                // Do nothing
-            }
-        }
-    }
-    
-    return query;
 }
