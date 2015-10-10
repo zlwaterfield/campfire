@@ -43,11 +43,13 @@ exports.getConferences = function(req, res) {
     var priceOver = parseFloat(requestQuery['over']);
     var priceUnder = parseFloat(requestQuery['under']);
     
-    var hasCityGeohashEquality = (!!cityGeohash || !!city);
-    var hasDateEquality = !!date;
-    var hasPriceEquality = !!price;
+    // 0 = Value not specified
+    // 1 = Value is specified and an inequality
+    // 2 = Value is specified and an equality
+    var valueStates = [0, 1, 2];
+    var clusteringColumns = {'date': 0, 'geo': 0, 'price': 0};
     
-    var tableName = getTableName('conferences', category, {'date': hasDateEquality, 'price': hasPriceEquality, 'geo': hasCityGeohashEquality});
+    var inequalityCount = 0;
     var predicates = [];
     var statementParams = [];
     
@@ -57,9 +59,14 @@ exports.getConferences = function(req, res) {
     }
     
     if (date) {
+        clusteringColumns['date'] = 2;
         predicates.push('date_start=?');
         statementParams.push(date);
-    } else {
+    } else if (dateAfter || dateBefore) {
+        ++inequalityCount;
+        
+        clusteringColumns['date'] = 1;
+        
         if (dateAfter) {
             predicates.push('date_start>=?');
             statementParams.push(dateAfter);
@@ -72,10 +79,15 @@ exports.getConferences = function(req, res) {
     }
     
     if (price) {
+        clusteringColumns['price'] = 2;
         predicates.push('price_current=?');
         statementParams.push(price);
-    } else if (hasDateEquality) {
-            // Can only support one inequality predicate currently
+    } else if ((inequalityCount == 0) && (priceOver || priceUnder)) {
+        // Can only support one inequality predicate currently
+        ++inequalityCount;
+        
+        clusteringColumns['price'] = 1;
+        
         if (priceOver) {
             predicates.push('price_current>=?');
             statementParams.push(priceOver);
@@ -88,13 +100,17 @@ exports.getConferences = function(req, res) {
     }
     
     if (city) {
+        clusteringColumns['geo'] = 2;
         predicates.push('geohash=?');
         statementParams.push(city);
     } else if (cityGeohash) {
         if (citySearchRadius) {
-            if (hasDateEquality && hasPriceEquality) {
+            if (inequalityCount == 0) {
                 // Can only support one inequality predicate currently
+                ++inequalityCount;
+                
                 // TODO
+                clusteringColumns['geo'] = 1;
                 predicates.push('geohash>=?');
                 statementParams.push(cityGeohash);
             
@@ -102,11 +118,13 @@ exports.getConferences = function(req, res) {
                 statementParams.push(cityGeohash);
             }
         } else {
+            clusteringColumns['geo'] = 2;
             predicates.push('geohash=?');
             statementParams.push(cityGeohash);
         }
     }
     
+    var tableName = getTableName('conferences', category, clusteringColumns);
     var statement = 'SELECT * FROM campfire.' + tableName;
     if (predicates.length > 0) {
         statement += ' WHERE ' + predicates.join(' AND ');
@@ -144,23 +162,33 @@ exports.getItem = function(req, res) {
 function getTableName(tableType, category, clusteringColumns) {
     console.log('getTableName', clusteringColumns);
     
-    var tableName = tableType;
-    var tableNameSuffix = '';
+    var equalityClusteringColumns = '';
+    var inequalityClusteringColumns = '';
+    var unspecifiedClusteringColumns = '';
     
     if (category) {
-        tableName += '_cat'
+        equalityClusteringColumns += '_cat'
         
         for (var clusteringColumn in clusteringColumns) {
             var suffix = '_' + clusteringColumn;
-            if (clusteringColumns[clusteringColumn]) {
-                tableName += suffix;
-            } else {
-                // A required clustering column was not specified
-                // Append it to the end of the table name
-                tableNameSuffix += suffix;
+            
+            switch (clusteringColumns[clusteringColumn]) {
+                case 0: {
+                    // A required clustering column was not specified
+                    // Append it to the end of the table name
+                    unspecifiedClusteringColumns += suffix;
+                    break;
+                }
+                case 1: {
+                    inequalityClusteringColumns += suffix;
+                    break;
+                }
+                default: {
+                    equalityClusteringColumns += suffix;
+                }
             }
         }
     }
     
-    return tableName + tableNameSuffix;
+    return tableType + equalityClusteringColumns + inequalityClusteringColumns + unspecifiedClusteringColumns;
 }
