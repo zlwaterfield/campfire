@@ -6,8 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var app = express();
 var allowCrossDomain = function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', 'example.com');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
 
     next();
@@ -27,8 +27,8 @@ app.set('view engine', 'jade');
 // Routes
 var index = require('./routes/views/index');
 var item = require('./routes/views/item');
-var api = require('./routes/api_static');
-var base_api = require('./routes/api_db');
+var api_static = require('./routes/api_static');
+var api_db = require('./routes/api_db');
 
 // Explore Routes
 app.use('/', index);
@@ -36,9 +36,9 @@ app.use('/explore/', index);
 app.use('/item/:id', item);
 
 // Api Routes
-app.get('/api/tag_btns', api.getTagBtns);
-app.get('/api/item/:id', base_api.getItem);
-app.get('/api/:type/:cat', base_api.getConferences);
+app.get('/api/tag_btns', api_static.getTagBtns);
+app.get('/api/item/:id', api_db.getItem);
+app.get('/api/:type/:cat', api_db.getConferences);
 
 // Other redirect
 app.use('*', function(req, res) {

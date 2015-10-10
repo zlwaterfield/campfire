@@ -20,7 +20,7 @@ function getConfig(file){
 
 var geohashData =  getConfig('json/geohash.json');
 var categoryData =  getConfig('json/categories.json');
-var client = new cassandra.Client({contactPoints: ['45.55.153.170'], keyspace: 'event'});
+var client = new cassandra.Client({contactPoints: ['45.55.153.170'], keyspace: 'campfire'});
 
 /*============================================
                 GETS
@@ -130,8 +130,8 @@ exports.getItem = function(req, res) {
     
     var statement = 'SELECT * FROM conferences WHERE event_id=?';
     var statementParams = [id];
-    
-    client.execute(query, statementParams, {prepare: true}, function (err, result) {
+
+    client.execute(statement, statementParams, {prepare: true}, function (err, result) {
         // Run next function in series
         if(!err) {
           res.send(result.rows);
