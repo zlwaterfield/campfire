@@ -18,7 +18,6 @@ function getConfig(file){
     return readJsonFileSync(filepath);
 }
 
-var geohashData =  getConfig('json/geohash.json');
 var client = new cassandra.Client({contactPoints: ['45.55.153.170'], keyspace: 'campfire'});
 
 /*============================================
@@ -29,15 +28,14 @@ exports.getConferences = function(req, res) {
     var category = parseInt(req.params.cat);
     var requestQuery = req.query;
     
-    // TODO: Remove
-    var city = geohashData.cities[requestQuery['geo']];
     var date = requestQuery['date'];
-    var price = parseFloat(requestQuery['price']);
-    
-    var cityGeohash = geohashData.cities[requestQuery['near']];
-    var citySearchRadius = requestQuery['within'];
     var dateAfter = requestQuery['after'];
     var dateBefore = requestQuery['before'];
+    
+    var geohashNear = requestQuery['near'];
+    var geohashSearchRadius = requestQuery['within'];
+    
+    var price = parseFloat(requestQuery['price']);
     var priceOver = parseFloat(requestQuery['over']);
     var priceUnder = parseFloat(requestQuery['under']);
     
@@ -97,12 +95,8 @@ exports.getConferences = function(req, res) {
         }
     }
     
-    if (city) {
-        clusteringColumns['geo'] = 2;
-        predicates.push('geohash=?');
-        statementParams.push(city);
-    } else if (cityGeohash) {
-        if (citySearchRadius) {
+    if (geohashNear) {
+        if (geohashSearchRadius) {
             if (inequalityCount == 0) {
                 // Can only support one inequality predicate currently
                 ++inequalityCount;
@@ -110,15 +104,15 @@ exports.getConferences = function(req, res) {
                 // TODO
                 clusteringColumns['geo'] = 1;
                 predicates.push('geohash>=?');
-                statementParams.push(cityGeohash);
+                statementParams.push(geohashNear);
             
                 predicates.push('geohash<=?');
-                statementParams.push(cityGeohash);
+                statementParams.push(geohashNear);
             }
         } else {
             clusteringColumns['geo'] = 2;
             predicates.push('geohash=?');
-            statementParams.push(cityGeohash);
+            statementParams.push(geohashNear);
         }
     }
     
