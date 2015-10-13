@@ -146,7 +146,7 @@ exports.getConferences = function(req, res) {
 exports.getItem = function(req, res) {
     var id = req.params.id;
     
-    var statement = 'SELECT * FROM conferences WHERE event_id=?';
+    var statement = 'SELECT * FROM campfire.conferences WHERE event_id=?';
     var statementParams = [id];
 
     client.execute(statement, statementParams, {prepare: true}, function (err, result) {
