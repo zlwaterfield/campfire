@@ -19,7 +19,6 @@ function getConfig(file){
 }
 
 var geohashData =  getConfig('json/geohash.json');
-var categoryData =  getConfig('json/categories.json');
 var client = new cassandra.Client({contactPoints: ['45.55.153.170'], keyspace: 'campfire'});
 
 /*============================================
@@ -27,8 +26,7 @@ var client = new cassandra.Client({contactPoints: ['45.55.153.170'], keyspace: '
  ============================================*/
 
 exports.getConferences = function(req, res) {
-    var category = categoryData[req.params.cat];
-    
+    var category = parseInt(req.params.cat);
     var requestQuery = req.query;
     
     // TODO: Remove
