@@ -121,7 +121,7 @@ exports.getConferences = function(req, res) {
     if (predicates.length > 0) {
         statement += ' WHERE ' + predicates.join(' AND ');
     }
-    statement += ' LIMIT 10';
+    statement += ' LIMIT 100';
     
     console.log(statement, statementParams);
     
