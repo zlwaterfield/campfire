@@ -1,24 +1,9 @@
-var cassandra = require('cassandra-driver'),
-    async = require('async'),
-    _ = require('underscore'),
-    fs = require("fs");
 
-function readJsonFileSync(filepath, encoding){
-
-    if (typeof (encoding) == 'undefined'){
-        encoding = 'utf8';
-    }
-    var file = fs.readFileSync(filepath, encoding);
-    return JSON.parse(file);
-}
-
-function getConfig(file){
-
-    var filepath = __dirname + '/' + file;
-    return readJsonFileSync(filepath);
-}
-
-var client = new cassandra.Client({contactPoints: ['45.55.153.170'], keyspace: 'campfire'});
+let cassandraDriver = require('cassandra-driver');
+let cassandraClient = new cassandraDriver.Client({
+    contactPoints: ['45.55.153.170'],
+    keyspace: 'campfire'
+});
 
 /*============================================
                 GETS
@@ -125,7 +110,7 @@ exports.getConferences = function(req, res) {
     
     console.log(statement, statementParams);
     
-    client.execute(statement, statementParams, {prepare: true}, function (err, result) {
+    cassandraClient.execute(statement, statementParams, {prepare: true}, function (err, result) {
         // Run next function in series
         if(!err) {
           res.send(result.rows);
@@ -141,7 +126,7 @@ exports.getConferenceByID = function(req, res) {
     var statement = 'SELECT * FROM campfire.conferences WHERE event_id=?';
     var statementParams = [id];
 
-    client.execute(statement, statementParams, {prepare: true}, function (err, result) {
+    cassandraClient.execute(statement, statementParams, {prepare: true}, function (err, result) {
         // Run next function in series
         if(!err) {
           res.send(result.rows);
