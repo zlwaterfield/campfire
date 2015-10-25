@@ -6,6 +6,38 @@ let cassandraClient = new cassandraDriver.Client({
     keyspace: 'campfire'
 });
 
+let schema = {
+    conferences: {
+        tableName: 'conferences',
+    
+        primaryKeyColumnType: {
+            CATEGORY: 0,
+            DATE_START: 1,
+            GEOHASH: 2,
+            PRICE_CURRENT: 3,
+        },
+        
+        primaryKeyColumns: [
+            {
+                shortStringValue: 'cat',
+                stringValue: 'category'
+            },
+            {
+                shortStringValue: 'date',
+                stringValue: 'date_start'
+            },
+            {
+                shortStringValue: 'geo',
+                stringValue: 'geohash'
+            },
+            {
+                shortStringValue: 'price',
+                stringValue: 'price_current'
+            }
+        ]
+    }
+};
+
 /*============================================
                 GETS
  ============================================*/
