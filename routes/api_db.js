@@ -116,7 +116,7 @@ exports.getConferences = function(req, res) {
         if(!err) {
           res.send(result.rows);
         } else {
-          console.log(err);
+          console.error(err);
         }
     });
 };
@@ -131,7 +131,7 @@ exports.getConferenceByID = function(req, res) {
         if(!err) {
           res.send(result.rows);
         } else {
-          console.log(err);
+          console.error(err);
         }
     });
 };
