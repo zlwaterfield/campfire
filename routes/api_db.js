@@ -156,8 +156,9 @@ exports.getConferences = function(req, res) {
 exports.getConferenceByID = function(req, res) {
     let id = req.params.id;
     
-    let statement = 'SELECT * FROM campfire.conferences WHERE event_id=?';
+    let statement = 'SELECT * FROM ' + schema.conferences.tableName + ' WHERE event_id=?';
     let statementParams = [id];
+    
     console.time('execute statement');
     cassandraClient.execute(statement, statementParams, {prepare: true}, function (err, result) {
         console.timeEnd('execute statement');
