@@ -43,108 +43,122 @@ let schema = {
  ============================================*/
 
 exports.getConferences = function(req, res) {
-    var category = parseInt(req.params.cat);
-    var requestQuery = req.query;
-    
-    var date = requestQuery['date'];
-    var dateAfter = requestQuery['after'];
-    var dateBefore = requestQuery['before'];
-    
-    var geohashNear = requestQuery['near'];
-    var geohashSearchRadius = requestQuery['within'];
-    
-    var price = parseFloat(requestQuery['price']);
-    var priceOver = parseFloat(requestQuery['over']);
-    var priceUnder = parseFloat(requestQuery['under']);
-    
-    // 0 = Value not specified
-    // 1 = Value is specified and an inequality
-    // 2 = Value is specified and an equality
-    var valueStates = [0, 1, 2];
-    var clusteringColumns = {'date': 0, 'geo': 0, 'price': 0};
-    
-    var inequalityCount = 0;
-    var predicates = [];
-    var statementParams = [];
-    
-    if (category) {
-        predicates.push('category=?')
-        statementParams.push(category);
+    let category = parseInt(req.params.cat);
+    if (!category) {
+        res.status(400).send('TODO: Report error; Category is required');
+        return;
     }
     
-    if (date) {
-        clusteringColumns['date'] = 2;
-        predicates.push('date_start=?');
-        statementParams.push(date);
-    } else if (dateAfter || dateBefore) {
-        ++inequalityCount;
+    console.time('validate request');
+    let requestQuery = req.query;
+    
+    console.warn('TODO: Validate request query parameters');
+    let date = requestQuery['date'];
+    let dateAfter = requestQuery['after'];
+    let dateBefore = requestQuery['before'];
+    
+    let geohashNear = requestQuery['near'];
+    let geohashSearchRadius = requestQuery['within'];
+    
+    let price = parseFloat(requestQuery['price']);
+    let priceOver = parseFloat(requestQuery['over']);
+    let priceUnder = parseFloat(requestQuery['under']);
+    console.timeEnd('validate request');
+    
+    console.time('check query parameters');
+    let primaryKeyColumnType = schema.conferences.primaryKeyColumnType;
+    
+    let columns = {
+        // Category always needs to be specified first
+        equalityColumns: [[primaryKeyColumnType.CATEGORY, category]],
+        inequalityColumnTypes: [],
+        unspecifiedColumnTypes: []
+    };
+    
+    // Check for date
+    {
+        let columnType = primaryKeyColumnType.DATE_START;
         
-        clusteringColumns['date'] = 1;
-        
-        if (dateAfter) {
-            predicates.push('date_start>=?');
-            statementParams.push(dateAfter);
-        }
-        
-        if (dateBefore) {
-            predicates.push('date_start<=?');
-            statementParams.push(dateBefore);
+        if (date) {
+            columns.equalityColumns.push([columnType, date]);
+        } else if (dateAfter || dateBefore) {
+            columns.inequalityColumnTypes.push(columnType);
+        } else {
+            columns.unspecifiedColumnTypes.push(columnType);
         }
     }
     
-    if (price) {
-        clusteringColumns['price'] = 2;
-        predicates.push('price_current=?');
-        statementParams.push(price);
-    } else if ((inequalityCount == 0) && (priceOver || priceUnder)) {
-        // Can only support one inequality predicate currently
-        ++inequalityCount;
+    // Check for price
+    {
+        let columnType = primaryKeyColumnType.PRICE_CURRENT;
         
-        clusteringColumns['price'] = 1;
-        
-        if (priceOver) {
-            predicates.push('price_current>=?');
-            statementParams.push(priceOver);
-        }
-        
-        if (priceUnder) {
-            predicates.push('price_current<=?');
-            statementParams.push(priceUnder);
+        if (price) {
+            columns.equalityColumns.push([columnType, price]);
+        } else if (priceOver || priceUnder) {
+            columns.inequalityColumnTypes.push(columnType);
+        } else {
+            columns.unspecifiedColumnTypes.push(columnType);
         }
     }
     
-    if (geohashNear) {
-        if (geohashSearchRadius) {
-            if (inequalityCount == 0) {
-                // Can only support one inequality predicate currently
-                ++inequalityCount;
-                
-                // TODO
-                clusteringColumns['geo'] = 1;
-                predicates.push('geohash>=?');
-                statementParams.push(geohashNear);
-            
-                predicates.push('geohash<=?');
-                statementParams.push(geohashNear);
+    // Check for geohash
+    {
+        let columnType = primaryKeyColumnType.GEOHASH;
+        
+        if (geohashNear) {
+            if (geohashSearchRadius) {
+                console.warn('TODO: Handle geohash search radius');
+                columns.inequalityColumnTypes.push(columnType);
+            } else {
+                columns.equalityColumns.push([columnType, geohashNear]);
             }
         } else {
-            clusteringColumns['geo'] = 2;
-            predicates.push('geohash=?');
-            statementParams.push(geohashNear);
+            columns.unspecifiedColumnTypes.push(columnType);
         }
     }
+    console.timeEnd('check query parameters');
     
-    var tableName = getTableName('conferences', category, clusteringColumns);
-    var statement = 'SELECT * FROM campfire.' + tableName;
-    if (predicates.length > 0) {
-        statement += ' WHERE ' + predicates.join(' AND ');
+    console.time('prepare statement');
+    let statementContext = prepareStatement(schema.conferences, columns, function(columnType, parametersGreaterThanOrEqual, parametersLessThanOrEqual) {
+        switch (columnType) {
+            case primaryKeyColumnType.DATE_START: {
+                parametersGreaterThanOrEqual.push(dateAfter || 0);
+                parametersLessThanOrEqual.push(dateBefore || Number.MAX_SAFE_INTEGER);
+                break;
+            }
+            case primaryKeyColumnType.GEOHASH: {
+                console.warn('TODO: Use proper geohash bounds');
+                parametersGreaterThanOrEqual.push(geohashNear);
+                parametersLessThanOrEqual.push(geohashNear);
+                break;
+            }
+            case primaryKeyColumnType.PRICE_CURRENT: {
+                parametersGreaterThanOrEqual.push(priceOver || 0);
+                parametersLessThanOrEqual.push(priceUnder || Number.MAX_SAFE_INTEGER);
+                break;
+            }
+            default: {
+                // Do nothing
+            }
+        }
+    });
+    console.timeEnd('prepare statement');
+    
+    console.time('construct statement');
+    let statement = 'SELECT * FROM ' + statementContext.tableName;
+    if (statementContext.statementPredicates.length > 0) {
+        statement += ' WHERE ' + statementContext.statementPredicates.join(' AND ');
     }
     statement += ' LIMIT 100';
+    console.timeEnd('construct statement');
     
-    console.log(statement, statementParams);
+    console.log(statement);
+    console.log(statementContext);
     
-    cassandraClient.execute(statement, statementParams, {prepare: true}, function (err, result) {
-        // Run next function in series
+    console.time('execute statement');
+    cassandraClient.execute(statement, statementContext.statementParameters, {prepare: true}, function (err, result) {
+        console.timeEnd('execute statement');
+        
         if(!err) {
           res.send(result.rows);
         } else {
@@ -171,36 +185,81 @@ exports.getConferenceByID = function(req, res) {
     });
 };
 
-function getTableName(tableType, category, clusteringColumns) {
-    console.log('getTableName', clusteringColumns);
+function prepareStatement(tableSchema, columns, inequalityColumnHandler) {
+    let context = {
+        tableName: null,
+        statementPredicates: [],
+        statementParameters: []
+    };
     
-    var equalityClusteringColumns = '';
-    var inequalityClusteringColumns = '';
-    var unspecifiedClusteringColumns = '';
+    let tableNameSuffixes = [];
     
-    if (category) {
-        equalityClusteringColumns += '_cat'
+    function appendEqualityColumn(column, value) {
+        tableNameSuffixes.push(column.shortStringValue);
+        context.statementPredicates.push(column.stringValue + '=?');
+        context.statementParameters.push(value);
+    };
+    
+    let primaryKeyColumnType = tableSchema.primaryKeyColumnType;
+    let primaryKeyColumns = tableSchema.primaryKeyColumns;
+    
+    columns.equalityColumns.forEach(function(e) {
+        let columnType = e[0];
+        let value = e[1];
         
-        for (var clusteringColumn in clusteringColumns) {
-            var suffix = '_' + clusteringColumn;
+        appendEqualityColumn(primaryKeyColumns[columnType], value);
+    });
+    
+    let inequalityColumnTypes = columns.inequalityColumnTypes;
+    if (inequalityColumnTypes.length > 0)
+    {
+        // Construct and specify tuple inequalities
+        let tupleInequalityColumns = [];
+        let tupleparametersGreaterThanOrEqual = [];
+        let tupleparametersLessThanOrEqual = [];
+        
+        inequalityColumnTypes.forEach(function(columnType) {
+            let column = primaryKeyColumns[columnType];
             
-            switch (clusteringColumns[clusteringColumn]) {
-                case 0: {
-                    // A required clustering column was not specified
-                    // Append it to the end of the table name
-                    unspecifiedClusteringColumns += suffix;
-                    break;
-                }
-                case 1: {
-                    inequalityClusteringColumns += suffix;
-                    break;
-                }
-                default: {
-                    equalityClusteringColumns += suffix;
-                }
+            tableNameSuffixes.push(column.shortStringValue);
+            tupleInequalityColumns.push(column.stringValue);
+            
+            inequalityColumnHandler(columnType, tupleparametersGreaterThanOrEqual, tupleparametersLessThanOrEqual);
+        });
+        
+        if (tupleInequalityColumns.length > 0)
+        {
+            let tupleInequalityColumnsString = '(' + tupleInequalityColumns.join(',') + ')';
+            let tupleInequalityParametersString = '(' + Array(tupleInequalityColumns.length).fill('?') + ')';
+        
+            if (tupleparametersGreaterThanOrEqual.length > 0)
+            {
+                context.statementPredicates.push(tupleInequalityColumnsString + '>=' + tupleInequalityParametersString);
+                context.statementParameters = context.statementParameters.concat(tupleparametersGreaterThanOrEqual);
+            }
+        
+            if (tupleparametersLessThanOrEqual.length > 0)
+            {
+                context.statementPredicates.push(tupleInequalityColumnsString + '<=' + tupleInequalityParametersString);
+                context.statementParameters = context.statementParameters.concat(tupleparametersLessThanOrEqual);
             }
         }
     }
     
-    return tableType + equalityClusteringColumns + inequalityClusteringColumns + unspecifiedClusteringColumns;
+    // Append the unspecified primary key columns to the end of the table name
+    columns.unspecifiedColumnTypes.forEach(function(columnType) {
+        let column = primaryKeyColumns[columnType];
+        
+        tableNameSuffixes.push(column.shortStringValue);
+    });
+    
+    let tableName = tableSchema.tableName;
+    if (tableNameSuffixes.length > 0)
+    {
+        tableName += '_' + tableNameSuffixes.join('_');
+    }
+    
+    context.tableName = tableName;
+    
+    return context;
 }
