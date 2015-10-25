@@ -135,7 +135,7 @@ exports.getConferences = function(req, res) {
     });
 };
 
-exports.getItem = function(req, res) {
+exports.getConferenceByID = function(req, res) {
     var id = req.params.id;
     
     var statement = 'SELECT * FROM campfire.conferences WHERE event_id=?';

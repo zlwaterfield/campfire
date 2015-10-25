@@ -23,7 +23,7 @@ var api_static = require('./routes/api_static.js');
 var api_db = require('./routes/api_db.js');
 // Api Routes
 app.get('/api/tag_btns', api_static.getTagBtns);
-app.get('/api/item/:id', api_db.getItem);
+app.get('/api/item/:id', api_db.getConferenceByID);
 app.get('/api/:type/:cat', api_db.getConferences);
 
 module.exports = app;
