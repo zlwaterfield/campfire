@@ -1,3 +1,4 @@
+"use strict";
 
 let cassandraDriver = require('cassandra-driver');
 let cassandraClient = new cassandraDriver.Client({
