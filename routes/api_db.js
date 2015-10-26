@@ -63,6 +63,8 @@ exports.getConferences = function(req, res) {
     let price = parseFloat(requestQuery['price']);
     let priceOver = parseFloat(requestQuery['over']);
     let priceUnder = parseFloat(requestQuery['under']);
+    
+    let pageState = requestQuery['page'];
     console.timeEnd('validate request');
     
     console.time('check query parameters');
@@ -149,18 +151,20 @@ exports.getConferences = function(req, res) {
     if (statementContext.statementPredicates.length > 0) {
         statement += ' WHERE ' + statementContext.statementPredicates.join(' AND ');
     }
-    statement += ' LIMIT 100';
     console.timeEnd('construct statement');
     
     console.log(statement);
     console.log(statementContext);
     
     console.time('execute statement');
-    cassandraClient.execute(statement, statementContext.statementParameters, {prepare: true}, function (err, result) {
+    cassandraClient.execute(statement, statementContext.statementParameters, {fetchSize: 100, pageState: pageState, prepare: true}, function (err, result) {
         console.timeEnd('execute statement');
         
         if(!err) {
-            res.send(result.rows);
+            res.send({
+                p: result.pageState,
+                r: result.rows
+            });
         } else {
             console.error(err);
         }
