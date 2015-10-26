@@ -160,9 +160,9 @@ exports.getConferences = function(req, res) {
         console.timeEnd('execute statement');
         
         if(!err) {
-          res.send(result.rows);
+            res.send(result.rows);
         } else {
-          console.error(err);
+            console.error(err);
         }
     });
 };
@@ -178,9 +178,9 @@ exports.getConferenceByID = function(req, res) {
         console.timeEnd('execute statement');
         
         if(!err) {
-          res.send(result.rows);
+            res.send(result.rows);
         } else {
-          console.error(err);
+            console.error(err);
         }
     });
 };
