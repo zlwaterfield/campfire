@@ -161,10 +161,35 @@ exports.getConferences = function(req, res) {
         console.timeEnd('execute statement');
         
         if(!err) {
-            res.send({
-                p: result.pageState,
-                r: result.rows
-            });
+            let rows = result.rows;
+            
+            if (columns.inequalityColumnTypes.length > 0) {
+                rows = rows.filter(function(row) {
+                    // Filter by date
+                    let isMatch = (!dateAfter || (row.date_end >= Date.parse(dateAfter))) && (!dateBefore || (row.date_end <= Date.parse(dateBefore)));
+                    
+                    // Filter by price
+                    isMatch = isMatch && (!priceOver || (priceOver <= row.price_current)) && (!priceUnder || (row.price_current <= priceUnder));
+                    
+                    if (isMatch && geohashNear && geohashSearchRadius) {
+                        // Filter by geohash
+                        console.warn('TODO: Handle geohash search radius');
+                        let geohash = row.geohash;
+                        isMatch = (geohash == geohashNear);
+                    }
+                    
+                    return isMatch;
+                });
+            }
+            
+            let responsePayload = {r: rows};
+            
+            let resultPageState = result.pageState;
+            if (resultPageState) {
+                responsePayload['p'] = resultPageState;
+            }
+            
+            res.send(responsePayload);
         } else {
             console.error(err);
             res.status(500).send(err.message);
