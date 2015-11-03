@@ -60,9 +60,9 @@ exports.getConferences = function(req, res) {
     let geohashNear = requestQuery['near'];
     let geohashSearchRadius = requestQuery['within'];
     
-    let price = parseFloat(requestQuery['price']);
-    let priceOver = parseFloat(requestQuery['over']);
-    let priceUnder = parseFloat(requestQuery['under']);
+    let price = parseInt(requestQuery['price']);
+    let priceOver = parseInt(requestQuery['over']);
+    let priceUnder = parseInt(requestQuery['under']);
     
     let pageState = requestQuery['page'];
     console.timeEnd('validate request');
