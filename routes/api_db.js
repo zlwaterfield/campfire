@@ -182,6 +182,8 @@ exports.getConferences = function(req, res) {
                 });
             }
             
+            console.log('Returned ' + rows.length + ' row(s)')
+            
             let responsePayload = {r: rows};
             
             let resultPageState = result.pageState;
@@ -208,7 +210,11 @@ exports.getConferenceByID = function(req, res) {
         console.timeEnd('execute statement');
         
         if(!err) {
-            res.send(result.rows);
+            let rows = result.rows;
+            
+            console.log('Returned ' + rows.length + ' row(s)')
+            
+            res.send(rows);
         } else {
             console.error(err);
             res.status(500).send(err.message);
