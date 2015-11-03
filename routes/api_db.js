@@ -169,7 +169,9 @@ exports.getConferences = function(req, res) {
                     let isMatch = (!dateAfter || (row.date_end >= Date.parse(dateAfter))) && (!dateBefore || (row.date_end <= Date.parse(dateBefore)));
                     
                     // Filter by price
-                    isMatch = isMatch && (!priceOver || (priceOver <= row.price_current)) && (!priceUnder || (row.price_current <= priceUnder));
+                    if (isMatch) {
+                        isMatch = (!priceOver || (priceOver <= row.price_current)) && (!priceUnder || (row.price_current <= priceUnder));
+                    }
                     
                     if (isMatch && geohashNear && geohashSearchRadius) {
                         // Filter by geohash
