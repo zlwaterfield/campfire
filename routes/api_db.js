@@ -77,8 +77,8 @@ exports.getConferences = function(req, res) {
         unspecifiedColumnTypes: []
     };
     
-    // Check for date
     {
+        // Check for date
         let columnType = primaryKeyColumnType.DATE_START;
         
         if (date) {
@@ -90,8 +90,8 @@ exports.getConferences = function(req, res) {
         }
     }
     
-    // Check for price
     {
+        // Check for price
         let columnType = primaryKeyColumnType.PRICE_CURRENT;
         
         if (price) {
@@ -103,8 +103,8 @@ exports.getConferences = function(req, res) {
         }
     }
     
-    // Check for geohash
     {
+        // Check for geohash
         let columnType = primaryKeyColumnType.GEOHASH;
         
         if (geohashNear) {
@@ -215,8 +215,7 @@ function prepareStatement(tableSchema, columns, inequalityColumnHandler) {
     });
     
     let inequalityColumnTypes = columns.inequalityColumnTypes;
-    if (inequalityColumnTypes.length > 0)
-    {
+    if (inequalityColumnTypes.length > 0) {
         // Construct and specify tuple inequalities
         let tupleInequalityColumns = [];
         let tupleparametersGreaterThanOrEqual = [];
@@ -231,19 +230,16 @@ function prepareStatement(tableSchema, columns, inequalityColumnHandler) {
             inequalityColumnHandler(columnType, tupleparametersGreaterThanOrEqual, tupleparametersLessThanOrEqual);
         });
         
-        if (tupleInequalityColumns.length > 0)
-        {
+        if (tupleInequalityColumns.length > 0) {
             let tupleInequalityColumnsString = '(' + tupleInequalityColumns.join(',') + ')';
             let tupleInequalityParametersString = '(' + Array(tupleInequalityColumns.length).fill('?') + ')';
         
-            if (tupleparametersGreaterThanOrEqual.length > 0)
-            {
+            if (tupleparametersGreaterThanOrEqual.length > 0) {
                 context.statementPredicates.push(tupleInequalityColumnsString + '>=' + tupleInequalityParametersString);
                 context.statementParameters = context.statementParameters.concat(tupleparametersGreaterThanOrEqual);
             }
         
-            if (tupleparametersLessThanOrEqual.length > 0)
-            {
+            if (tupleparametersLessThanOrEqual.length > 0) {
                 context.statementPredicates.push(tupleInequalityColumnsString + '<=' + tupleInequalityParametersString);
                 context.statementParameters = context.statementParameters.concat(tupleparametersLessThanOrEqual);
             }
@@ -258,8 +254,7 @@ function prepareStatement(tableSchema, columns, inequalityColumnHandler) {
     });
     
     let tableName = tableSchema.tableName;
-    if (tableNameSuffixes.length > 0)
-    {
+    if (tableNameSuffixes.length > 0) {
         tableName += '_' + tableNameSuffixes.join('_');
     }
     
