@@ -157,7 +157,7 @@ exports.getConferences = function(req, res) {
     console.log(statementContext);
     
     console.time('execute statement');
-    cassandraClient.execute(statement, statementContext.statementParameters, {fetchSize: 100, pageState: pageState, prepare: true}, function (err, result) {
+    cassandraClient.execute(statement, statementContext.statementParameters, {fetchSize: 20, pageState: pageState, prepare: true}, function (err, result) {
         console.timeEnd('execute statement');
         
         if(!err) {
