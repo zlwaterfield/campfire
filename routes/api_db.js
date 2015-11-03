@@ -167,6 +167,7 @@ exports.getConferences = function(req, res) {
             });
         } else {
             console.error(err);
+            res.status(500).send(err.message);
         }
     });
 };
@@ -185,6 +186,7 @@ exports.getConferenceByID = function(req, res) {
             res.send(result.rows);
         } else {
             console.error(err);
+            res.status(500).send(err.message);
         }
     });
 };
