@@ -168,8 +168,8 @@ exports.getConferences = function(req, res) {
                     // Filter by date
                     let isMatch = (!dateAfter || (row.date_end >= Date.parse(dateAfter))) && (!dateBefore || (row.date_end <= Date.parse(dateBefore)));
                     
-                    // Filter by price
                     if (isMatch) {
+                        // Filter by price
                         isMatch = (!priceOver || (priceOver <= row.price_current)) && (!priceUnder || (row.price_current <= priceUnder));
                     }
                     
