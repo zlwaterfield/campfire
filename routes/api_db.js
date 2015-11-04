@@ -85,7 +85,6 @@ exports.getConferences = function(req, res) {
             columns.equalityColumns.push([columnType, date]);
         } else if (dateAfter || dateBefore) {
             if (dateBefore) {
-                console.log('dateBefore', dateBefore);
                 let latestDate = new Date(dateBefore);
                 latestDate.setUTCHours(23, 59, 59, 999);
                 dateBefore = latestDate.getTime();
