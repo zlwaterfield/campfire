@@ -53,9 +53,9 @@ exports.getConferences = function(req, res) {
     let requestQuery = req.query;
     
     console.warn('TODO: Validate request query parameters');
-    let date = requestQuery['date'];
-    let dateAfter = requestQuery['after'];
-    let dateBefore = requestQuery['before'];
+    let date = Date.parse(requestQuery['date']);
+    let dateAfter = Date.parse(requestQuery['after']);
+    let dateBefore = Date.parse(requestQuery['before']);
     
     let geohashNear = requestQuery['near'];
     let geohashSearchRadius = requestQuery['within'];
@@ -84,6 +84,13 @@ exports.getConferences = function(req, res) {
         if (date) {
             columns.equalityColumns.push([columnType, date]);
         } else if (dateAfter || dateBefore) {
+            if (dateBefore) {
+                console.log('dateBefore', dateBefore);
+                let latestDate = new Date(dateBefore);
+                latestDate.setUTCHours(23, 59, 59, 999);
+                dateBefore = latestDate.getTime();
+            }
+            
             columns.inequalityColumnTypes.push(columnType);
         } else {
             columns.unspecifiedColumnTypes.push(columnType);
