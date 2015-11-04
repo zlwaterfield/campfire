@@ -166,7 +166,7 @@ exports.getConferences = function(req, res) {
             if (columns.inequalityColumnTypes.length > 0) {
                 rows = rows.filter(function(row) {
                     // Filter by date
-                    let isMatch = (!dateAfter || (row.date_end >= Date.parse(dateAfter))) && (!dateBefore || (row.date_end <= Date.parse(dateBefore)));
+                    let isMatch = (!dateAfter || (row.date_start >= dateAfter)) && (!dateBefore || (row.date_start <= dateBefore));
                     
                     if (isMatch) {
                         // Filter by price
