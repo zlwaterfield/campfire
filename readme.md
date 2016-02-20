@@ -1,9 +1,5 @@
-## Firewood
+# Campfire
 
-### Run locally
-###### Must have node installed `https://nodejs.org/en/`
+Node express server connecting to cassandra databse
 
-  - Clone repo `git clone <repo url>`
-  - `npm install`
-  - `node bin/www` 
-  - Open browser `http://localhost:3000`
+Frontend code available at [Campfire App](https://github.com/zlwaterfield/campfire-app)
